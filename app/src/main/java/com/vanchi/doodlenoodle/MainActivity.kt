@@ -3,6 +3,7 @@ package com.vanchi.doodlenoodle
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
@@ -51,5 +52,21 @@ class MainActivity : AppCompatActivity() {
             brushDialog.dismiss()
         }
         brushDialog.show()
+    }
+
+    fun paintPalletClicked(view: View) {
+        if(view !== mCurrentImageButtonPaint){
+            val imageButton = view as ImageButton
+            val color = imageButton.tag.toString()
+            drawingView!!.setColor(color)
+            imageButton.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
+            )
+
+            mCurrentImageButtonPaint!!.setImageDrawable(
+                ContextCompat.getDrawable(this, R.drawable.pallet_normal)
+            )
+            mCurrentImageButtonPaint = view
+        }
     }
 }

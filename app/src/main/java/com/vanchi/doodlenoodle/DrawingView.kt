@@ -38,6 +38,11 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         mDrawPaint!!.strokeWidth = mBrushSize
     }
 
+    fun setColor(newColor : String) {
+        val color = Color.parseColor(newColor)
+        mDrawPaint!!.color = color
+    }
+
 
     internal inner class CustomPath(var color: Int, var brushThickness: Float) : Path() {
 
@@ -72,7 +77,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                mDrawPath!!.color = mColor
+                mDrawPath!!.color = mDrawPaint!!.color
                 mDrawPath!!.brushThickness = mBrushSize
                 mDrawPath!!.reset()
                 if(touchX != null && touchY != null) {
