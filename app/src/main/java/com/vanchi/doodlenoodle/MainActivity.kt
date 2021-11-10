@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding!!.root)
         drawingView = binding!!.drawingView
         drawingView!!.setBrushSize(30.toFloat())
-        binding?.paintBrush?.setOnClickListener { view ->
+        binding?.paintBrush?.setOnClickListener {
             showBrushSizeDialog()
         }
     }
@@ -29,15 +29,15 @@ class MainActivity : AppCompatActivity() {
         val mediumBrush = brushDialogBinding.mediumBrush
         val largeBrush = brushDialogBinding.largeBrush
 
-        smallBrush.setOnClickListener { view ->
+        smallBrush.setOnClickListener {
             drawingView?.setBrushSize(20.toFloat())
             brushDialog.dismiss()
         }
-        mediumBrush.setOnClickListener { view ->
+        mediumBrush.setOnClickListener {
             drawingView?.setBrushSize(25.toFloat())
             brushDialog.dismiss()
         }
-        largeBrush.setOnClickListener { view ->
+        largeBrush.setOnClickListener {
             drawingView?.setBrushSize(30.toFloat())
             brushDialog.dismiss()
         }
