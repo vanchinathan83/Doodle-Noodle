@@ -4,21 +4,30 @@ import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import com.vanchi.doodlenoodle.databinding.ActivityMainBinding
 import com.vanchi.doodlenoodle.databinding.DialogBrushSizeBinding
 
 class MainActivity : AppCompatActivity() {
     private var drawingView: DrawingView? = null
     private var binding : ActivityMainBinding? = null
+    private var mCurrentImageButtonPaint: ImageButton? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
+        val linearLayout = binding?.colorPallet
+        mCurrentImageButtonPaint = linearLayout?.get(2) as ImageButton
+        mCurrentImageButtonPaint!!.setImageDrawable (
+            ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
+        )
         drawingView = binding!!.drawingView
         drawingView!!.setBrushSize(30.toFloat())
         binding?.paintBrush?.setOnClickListener {
             showBrushSizeDialog()
         }
+
     }
 
     fun showBrushSizeDialog(){
