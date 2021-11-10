@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DoodleNoodle</string>
+    <string name="ib_photo_chooser_desc">Gallery Button to choose the photos</string>
+    <string name="id_paint_brush_description">Paint Brush Thickness Selector</string>
 </resources>
