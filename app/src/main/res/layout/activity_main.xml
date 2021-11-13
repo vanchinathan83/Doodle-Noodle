@@ -28,7 +28,6 @@
             android:id="@+id/drawing_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#80FFFFFF"
             ></com.vanchi.doodlenoodle.DrawingView>
 
     </FrameLayout>
