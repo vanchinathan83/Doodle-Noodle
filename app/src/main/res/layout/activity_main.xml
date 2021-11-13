@@ -73,7 +73,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_margin="2dp"
-            android:src="@drawable/pallet_normal"
+            android:src="@drawable/pallet_pressed"
             android:tag="@color/blue"
             android:background="@color/blue"
             android:onClick="paintPalletClicked"
@@ -143,6 +143,24 @@
             android:src="@drawable/gallery"
             android:scaleType="fitXY"
             android:contentDescription="@string/ib_photo_chooser_desc"
+            />
+        <ImageButton
+            android:id="@+id/undo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_undo"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/ib_undo_button_description"
+            />
+        <ImageButton
+            android:id="@+id/redo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_redo"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/ib_redo_button_description"
             />
 
         <ImageButton

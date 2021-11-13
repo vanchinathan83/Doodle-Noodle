@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
         val linearLayout = binding?.colorPallet
-        mCurrentImageButtonPaint = linearLayout?.get(2) as ImageButton
+        mCurrentImageButtonPaint = linearLayout?.get(3) as ImageButton
         mCurrentImageButtonPaint!!.setImageDrawable (
             ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
         )
@@ -69,6 +69,12 @@ class MainActivity : AppCompatActivity() {
         drawingView!!.setBrushSize(30.toFloat())
         binding?.paintBrush?.setOnClickListener {
             showBrushSizeDialog()
+        }
+        binding?.undo?.setOnClickListener {
+            drawingView?.undoLastPath()
+        }
+        binding?.redo?.setOnClickListener {
+            drawingView?.redoLastPath()
         }
 
         binding?.ibPhotoChoose?.setOnClickListener {
