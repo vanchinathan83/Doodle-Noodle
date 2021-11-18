@@ -4,10 +4,15 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -15,9 +20,18 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.vanchi.doodlenoodle.databinding.ActivityMainBinding
 import com.vanchi.doodlenoodle.databinding.DialogBrushSizeBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.lang.Exception
+import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
     private var drawingView: DrawingView? = null
@@ -77,18 +91,57 @@ class MainActivity : AppCompatActivity() {
             drawingView?.redoLastPath()
         }
 
-        binding?.ibPhotoChoose?.setOnClickListener {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
-                showReasonDialog("Storage Permission", "Storage Permission Denied!")
-            }else {
-                storageActivityResultLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
-                val storageIntent = Intent(Intent.ACTION_PICK,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                openGalleryLauncher.launch(storageIntent)
+        binding?.save?.setOnClickListener {
+            if(isReadStorageAllowed()){
+                lifecycleScope.launch{
+                    val frameLayout = binding?.flDrawingView
+                    val bitmap = frameLayout?.let { fl -> getBitmapFromView(fl) }
+                    bitmap?.let { bm -> saveImage(bm)}
+                }
+            }else{
+                storageActivityResultLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                )
             }
         }
 
+        binding?.ibPhotoChoose?.setOnClickListener {
+            requestPermission()
+        }
+
+    }
+
+    private fun requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+            && shouldShowRequestPermissionRationale(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ).toString()
+            )
+        ) {
+            showReasonDialog("Storage Permission", "Storage Permission Denied!")
+        } else {
+            storageActivityResultLauncher.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
+            val storageIntent = Intent(
+                Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            )
+            openGalleryLauncher.launch(storageIntent)
+        }
+    }
+
+    private fun isReadStorageAllowed(): Boolean {
+        val result = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun showReasonDialog(title: String, message: String){
@@ -99,6 +152,52 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
         builder.create().show()
+    }
+
+    private fun getBitmapFromView(view: View) : Bitmap {
+        val bitmap: Bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas: Canvas = Canvas(bitmap)
+        val backGround = view.background
+        if(backGround != null){
+            backGround.draw(canvas)
+        }else {
+            canvas.drawColor(Color.WHITE)
+        }
+        view.draw(canvas)
+
+        return bitmap
+    }
+
+    private suspend fun saveImage(bitmap: Bitmap) : String {
+        var result = ""
+        withContext(Dispatchers.IO){
+            try{
+                val baos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG,90, baos)
+                val path = cacheDir?.absolutePath?.toString()
+                val f = File(path + File.separator +
+                "KidDrawingApp_"+ System.currentTimeMillis() /1000 + ".png")
+                val fo = FileOutputStream(f)
+                fo.write(baos.toByteArray())
+                fo.close()
+                result = f.absolutePath
+                runOnUiThread{
+                    if(result.isNotEmpty()){
+                        Toast.makeText(this@MainActivity,
+                        "File Saved at $result",
+                        Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(this@MainActivity,
+                            "Error saving file!!",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }catch (e: Exception){
+                result = ""
+                Log.e(Log.ERROR.toString(),e.printStackTrace().toString())
+            }
+        }
+        return  result
     }
 
     fun showBrushSizeDialog(){

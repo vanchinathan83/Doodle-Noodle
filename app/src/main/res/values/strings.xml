@@ -4,4 +4,5 @@
     <string name="id_paint_brush_description">Paint Brush Thickness Selector</string>
     <string name="ib_undo_button_description">Undo Button</string>
     <string name="ib_redo_button_description">Redo Button</string>
+    <string name="save_button_description">Save Button</string>
 </resources>
