@@ -21,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
 import com.vanchi.doodlenoodle.databinding.ActivityMainBinding
 import com.vanchi.doodlenoodle.databinding.DialogBrushSizeBinding
 import kotlinx.coroutines.Dispatchers
@@ -31,12 +30,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
-import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
     private var drawingView: DrawingView? = null
     private var binding : ActivityMainBinding? = null
     private var mCurrentImageButtonPaint: ImageButton? = null
+    private var progressDialog: Dialog? = null
     private var openGalleryLauncher:ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             result ->
@@ -92,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding?.save?.setOnClickListener {
+            showProgressDialog()
             if(isReadStorageAllowed()){
                 lifecycleScope.launch{
                     val frameLayout = binding?.flDrawingView
@@ -112,6 +112,19 @@ class MainActivity : AppCompatActivity() {
             requestPermission()
         }
 
+    }
+
+    private fun showProgressDialog(){
+        progressDialog = Dialog(this@MainActivity)
+        progressDialog?.setContentView(R.layout.custom_progress_dialog)
+        progressDialog?.show()
+    }
+
+    private fun dismissProgressDialog(){
+        if(progressDialog != null){
+            progressDialog?.dismiss()
+            progressDialog = null
+        }
     }
 
     private fun requestPermission() {
@@ -182,6 +195,7 @@ class MainActivity : AppCompatActivity() {
                 fo.close()
                 result = f.absolutePath
                 runOnUiThread{
+                    dismissProgressDialog()
                     if(result.isNotEmpty()){
                         Toast.makeText(this@MainActivity,
                         "File Saved at $result",
