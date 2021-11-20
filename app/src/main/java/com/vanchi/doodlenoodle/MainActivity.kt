@@ -228,16 +228,22 @@ class MainActivity : AppCompatActivity() {
         val brushDialog = Dialog(this)
         val brushDialogBinding: DialogBrushSizeBinding = DialogBrushSizeBinding.inflate(layoutInflater)
         brushDialog.setContentView(brushDialogBinding.root)
+        val extraSmallBrush = brushDialogBinding.extraSmallBrush
         val smallBrush = brushDialogBinding.smallBrush
         val mediumBrush = brushDialogBinding.mediumBrush
         val largeBrush = brushDialogBinding.largeBrush
 
+        extraSmallBrush.setOnClickListener {
+            drawingView?.setBrushSize(5.toFloat())
+            brushDialog.dismiss()
+        }
+
         smallBrush.setOnClickListener {
-            drawingView?.setBrushSize(20.toFloat())
+            drawingView?.setBrushSize(10.toFloat())
             brushDialog.dismiss()
         }
         mediumBrush.setOnClickListener {
-            drawingView?.setBrushSize(25.toFloat())
+            drawingView?.setBrushSize(20.toFloat())
             brushDialog.dismiss()
         }
         largeBrush.setOnClickListener {
